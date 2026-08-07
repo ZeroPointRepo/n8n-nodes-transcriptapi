@@ -45,6 +45,14 @@ Search, channel, and playlist listings return a `continuation_token` when more r
 - **Markdown with metadata**: a Markdown document with a title/channel/length header followed by the transcript text. Ready to drop into LLM prompts, notes, or docs.
 - **Structured JSON**: timestamped segments plus the metadata block, for downstream processing.
 
+### Example workflows
+
+- [TranscriptAPI workflow library](https://transcriptapi.com/workflows): ready-made YouTube transcript automations you can adapt to this node's operations.
+- Summarize new channel uploads: Get Latest Videos (free) into Get Transcript (Markdown) into your LLM node of choice.
+- Research sweep: Search YouTube into Get Transcript (JSON) per result, paginated with the continuation token.
+
+> Note: installing from the n8n Cloud nodes panel becomes available only after n8n verification; self-hosted instances can install the package by name today.
+
 ## Compatibility
 
 Requires n8n version 1.0 or later and Node.js 18.10+.
