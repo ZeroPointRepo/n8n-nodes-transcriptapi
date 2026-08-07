@@ -21,7 +21,7 @@ export class TranscriptApiApi implements ICredentialType {
 			default: '',
 			required: true,
 			description:
-				'Your TranscriptAPI API key (starts with "sk_"). Create one at https://transcriptapi.com — 100 free credits, no card (one-time).',
+				'Your TranscriptAPI API key (starts with "sk_"). Create one at https://transcriptapi.com: 100 free credits, no card (one-time).',
 		},
 	];
 
@@ -34,7 +34,7 @@ export class TranscriptApiApi implements ICredentialType {
 		},
 	};
 
-	// Credential verification uses the FREE video-info endpoint — it validates the
+	// Credential verification uses the FREE video-info endpoint; it validates the
 	// key without consuming any credits.
 	test: ICredentialTestRequest = {
 		request: {

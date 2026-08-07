@@ -162,7 +162,7 @@ export class TranscriptApi implements INodeType {
 				type: 'string',
 				displayOptions: { show: { resource: ['search'], continuation: [''] } },
 				default: '',
-				description: 'Search query (1–200 characters). Required for the first page.',
+				description: 'Search query (1-200 characters). Required for the first page.',
 			},
 			{
 				displayName: 'Result Type',
@@ -197,7 +197,7 @@ export class TranscriptApi implements INodeType {
 					{
 						name: 'Get Latest Videos',
 						value: 'channelLatest',
-						description: 'The ~15 newest videos of a channel via RSS — FREE, no credits',
+						description: 'The ~15 newest videos of a channel via RSS: FREE, no credits',
 						action: 'Get the latest channel videos',
 					},
 					{
@@ -221,9 +221,9 @@ export class TranscriptApi implements INodeType {
 				type: 'string',
 				displayOptions: { show: { resource: ['channel'] } },
 				default: '',
-				placeholder: '@handle, channel URL, or UC… ID',
+				placeholder: '@handle, channel URL, or UC channel ID',
 				description:
-					'The channel as an @handle, full channel URL, or UC… channel ID. Required for the first page.',
+					'The channel as an @handle, full channel URL, or UC channel ID. Required for the first page.',
 			},
 			{
 				displayName: 'Query',
@@ -231,7 +231,7 @@ export class TranscriptApi implements INodeType {
 				type: 'string',
 				displayOptions: { show: { resource: ['channel'], operation: ['channelSearch'] } },
 				default: '',
-				description: 'Search query within the channel (1–200 characters, first page)',
+				description: 'Search query within the channel (1-200 characters, first page)',
 			},
 			{
 				displayName: 'Continuation Token',
@@ -256,7 +256,7 @@ export class TranscriptApi implements INodeType {
 					{
 						name: 'List Playlist Videos',
 						value: 'playlistVideos',
-						description: 'Paginated playlist videos — PL, UU, LL, FL, and OL lists (1 credit/page)',
+						description: 'Paginated playlist videos: PL, UU, LL, FL, and OL lists (1 credit/page)',
 						action: 'List playlist videos',
 					},
 				],
@@ -268,7 +268,7 @@ export class TranscriptApi implements INodeType {
 				type: 'string',
 				displayOptions: { show: { resource: ['playlist'] } },
 				default: '',
-				placeholder: 'Playlist URL or ID (PL…, UU…, LL…, FL…, OL…)',
+				placeholder: 'Playlist URL or ID (PL, UU, LL, FL, or OL prefix)',
 				description: 'The playlist as a full URL or a playlist ID. Required for the first page.',
 			},
 			{

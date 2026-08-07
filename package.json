@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-transcriptapi",
   "version": "0.1.0",
-  "description": "n8n community node for TranscriptAPI — fetch YouTube transcripts (Markdown or JSON) and discover videos, channels, and playlists for AI and automation workflows.",
+  "description": "n8n community node for TranscriptAPI: fetch YouTube transcripts (Markdown or JSON) and discover videos, channels, and playlists for AI and automation workflows.",
   "keywords": [
     "n8n-community-node-package",
     "n8n",
