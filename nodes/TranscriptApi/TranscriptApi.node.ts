@@ -105,7 +105,7 @@ export class TranscriptApi implements INodeType {
 				required: true,
 				displayOptions: { show: { resource: ['video'] } },
 				default: '',
-				placeholder: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ or dQw4w9WgXcQ',
+				placeholder: 'https://www.youtube.com/watch?v=VV_JW4iCni0 or VV_JW4iCni0',
 				description:
 					'Full YouTube URL (watch, youtu.be, embed, or Shorts) or the bare 11-character video ID',
 			},

@@ -42,7 +42,7 @@ export class TranscriptApiApi implements ICredentialType {
 			baseURL: 'https://transcriptapi.com/api/v2',
 			url: '/youtube/info',
 			qs: {
-				video_url: 'dQw4w9WgXcQ',
+				video_url: 'VV_JW4iCni0',
 			},
 		},
 	};
