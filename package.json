@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-transcriptapi",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "n8n community node for TranscriptAPI: fetch YouTube transcripts (Markdown or JSON) and discover videos, channels, and playlists for AI and automation workflows.",
   "keywords": [
     "n8n-community-node-package",
@@ -27,7 +27,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ZeroPointRepo/n8n-nodes-transcriptapi.git"
+    "url": "git+https://github.com/ZeroPointRepo/n8n-nodes-transcriptapi.git"
   },
   "engines": {
     "node": ">=18.10"

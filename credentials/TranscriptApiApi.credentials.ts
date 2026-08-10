@@ -10,7 +10,7 @@ export class TranscriptApiApi implements ICredentialType {
 
 	displayName = 'TranscriptAPI API';
 
-	documentationUrl = 'https://transcriptapi.com/docs';
+	documentationUrl = 'https://transcriptapi.com/dashboard/api-keys';
 
 	properties: INodeProperties[] = [
 		{
@@ -20,6 +20,7 @@ export class TranscriptApiApi implements ICredentialType {
 			typeOptions: { password: true },
 			default: '',
 			required: true,
+			placeholder: 'sk_...',
 			description:
 				'Your TranscriptAPI API key (starts with "sk_"). Create one at https://transcriptapi.com: 100 free credits, no card (one-time).',
 		},

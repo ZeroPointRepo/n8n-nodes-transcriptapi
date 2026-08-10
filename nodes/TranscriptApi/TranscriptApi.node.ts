@@ -159,6 +159,7 @@ export class TranscriptApi implements INodeType {
 			{
 				displayName: 'Query',
 				name: 'query',
+				placeholder: 'machine learning tutorials',
 				type: 'string',
 				displayOptions: { show: { resource: ['search'], continuation: [''] } },
 				default: '',
@@ -228,6 +229,7 @@ export class TranscriptApi implements INodeType {
 			{
 				displayName: 'Query',
 				name: 'channelQuery',
+				placeholder: 'artificial intelligence',
 				type: 'string',
 				displayOptions: { show: { resource: ['channel'], operation: ['channelSearch'] } },
 				default: '',
