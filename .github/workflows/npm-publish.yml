@@ -1,0 +1,40 @@
+# npm publish with provenance, per n8n's verified-community-node requirement:
+# from May 1 2026 verified submissions must be published by GitHub Actions with
+# provenance (docs.n8n.io/connect/create-nodes/deploy-your-node/submit-community-nodes).
+#
+# Trigger: publishing a GitHub Release (tag vX.Y.Z), or manual dispatch.
+# Requires repo secret NPM_TOKEN (branded automation token, never personal).
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # REQUIRED for npm provenance attestation
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish with provenance
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

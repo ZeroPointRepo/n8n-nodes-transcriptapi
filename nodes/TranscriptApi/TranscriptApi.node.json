@@ -1,0 +1,18 @@
+{
+	"node": "n8n-nodes-transcriptapi.transcriptApi",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Miscellaneous"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://transcriptapi.com/docs"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://transcriptapi.com/docs"
+			}
+		]
+	}
+}
