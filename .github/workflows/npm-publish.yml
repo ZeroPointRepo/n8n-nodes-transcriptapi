@@ -26,7 +26,7 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Install
-        run: npm ci
+        run: npm ci --ignore-scripts # skip transitive isolated-vm native build (not in shipped artifact; deps:null) - Node-20 V8 header break
 
       - name: Lint
         run: npm run lint
