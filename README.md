@@ -6,6 +6,10 @@ This is an n8n community node for [TranscriptAPI](https://transcriptapi.com): Yo
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 
+## Why this node
+
+Most "YouTube for n8n" setups mean gluing together the Google YouTube Data API (quotas, OAuth, a separate console project) or an HTTP Request node hitting an undocumented scraper. This node wraps a single hosted backend, [TranscriptAPI](https://transcriptapi.com), behind one credential and eleven operations: transcripts, video metadata, search, and a full channel/playlist toolkit, all returning clean JSON your next node can consume directly.
+
 ## Installation
 
 Follow the [installation guide for community nodes](https://docs.n8n.io/integrations/community-nodes/installation/):
@@ -41,6 +45,22 @@ One node, eleven operations:
 | **Get Channel Sections** | Curated channel sections (Home shelves, podcasts, or releases) | 1 |
 | **List Playlist Videos** | Paginated playlist videos: PL, UU, LL, FL, and OL lists | 1/page |
 
+## When to use what
+
+| Job | Operation(s) |
+|---|---|
+| Get the words spoken in a video: summarize, translate, quote, index for search | **Get Transcript** |
+| A video's likes, links, publish date, related videos, without spending a credit on captions | **Get Video Metadata** |
+| Find videos, channels, playlists, or movies about a topic before pulling anything else | **Search YouTube** |
+| Monitor a channel for new uploads on a schedule, at no cost | **Get Latest Videos** |
+| Check a channel's size and which tabs it exposes before deciding what to fetch | **Get Channel Info** |
+| Find a specific topic inside one channel's back catalog | **Search Channel Videos** |
+| Pull a channel's entire catalog: uploads, Shorts, or live streams | **List Channel Videos** (set Feed) |
+| Build a transcription queue from a channel's playlists | **List Channel Playlists** then **List Playlist Videos** |
+| Read a channel's community announcements | **List Channel Posts** |
+| See how a channel curates its own homepage (featured shelves, podcasts, releases) | **Get Channel Sections** |
+| Process every video in one playlist: a course, a lecture series, a collection | **List Playlist Videos** |
+
 ### Pagination
 
 Search, channel, and playlist listings return a `continuation_token` when more results exist. Feed it into the operation's **Continuation Token** field to fetch the next page; the other parameters are then ignored (the token encodes them), except **List Channel Videos**, where you should repeat the same **Feed** value on every page.
@@ -49,6 +69,18 @@ Search, channel, and playlist listings return a `continuation_token` when more r
 
 - **Markdown with metadata**: a Markdown document with a title/channel/length header followed by the transcript text. Ready to drop into LLM prompts, notes, or docs.
 - **Structured JSON**: timestamped segments plus the metadata block, for downstream processing.
+
+## Use cases
+
+| Use case | Node setup |
+|---|---|
+| **Summarize new uploads every morning** | Schedule Trigger -> **Get Latest Videos** (free) -> **Get Transcript** (Markdown) -> your LLM node |
+| **Research sweep on a topic** | **Search YouTube** -> Split In Batches -> **Get Transcript** (JSON) per result, paginate with the continuation token |
+| **Screen before transcribing** | **Search YouTube** -> **Get Video Metadata** (check view count / publish date) -> IF node -> **Get Transcript** only for the ones worth it |
+| **Archive a channel's full catalog** | **Get Channel Info** (confirm tabs) -> **List Channel Videos** (Feed: videos) -> loop pages with the continuation token -> **Get Transcript** per video |
+| **Build a playlist-based course index** | **List Channel Playlists** -> **List Playlist Videos** per playlist -> **Get Transcript** per video |
+| **Track a channel's community posts** | Schedule Trigger -> **List Channel Posts** -> filter for new `postId`s -> notify (Slack/email node) |
+| **Competitor / topic watch inside one channel** | **Search Channel Videos** with your keyword -> **Get Transcript** on matches |
 
 ### Example workflows
 
@@ -65,8 +97,10 @@ Requires n8n version 1.0 or later and Node.js 18.10+.
 ## Resources
 
 - [TranscriptAPI documentation](https://transcriptapi.com/docs)
+- [REST API reference](https://transcriptapi.com/docs/api)
+- [MCP reference](https://transcriptapi.com/docs/mcp)
 - [n8n community nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
-- Family: [MCP server](https://github.com/ZeroPointRepo/youtube-mcp) · [agent skills](https://github.com/ZeroPointRepo/youtube-skills)
+- Family: [MCP server](https://github.com/ZeroPointRepo/youtube-mcp) · [agent skills](https://github.com/ZeroPointRepo/youtube-skills) · [CrewAI tools](https://github.com/ZeroPointRepo/crewai-transcriptapi)
 
 ## Disclosure
 
