@@ -2,7 +2,7 @@
 
 **TranscriptAPI: hosted YouTube transcript + video-discovery API for AI agents.** Also available as an [MCP server](https://github.com/ZeroPointRepo/youtube-mcp) and [agent skills](https://github.com/ZeroPointRepo/youtube-skills).
 
-This is an n8n community node for [TranscriptAPI](https://transcriptapi.com): YouTube transcripts and video discovery for n8n. Fetch transcripts as Markdown or structured JSON, pull rich video metadata, search YouTube for videos/channels/playlists/movies, and browse channel profiles, uploads, Shorts, streams, playlists, community posts, and curated sections — all from one node.
+This is an n8n community node for [TranscriptAPI](https://transcriptapi.com): YouTube transcripts and video discovery for n8n. Fetch transcripts as Markdown or structured JSON, pull rich video metadata, search YouTube for videos/channels/playlists/movies, and browse channel profiles, uploads, Shorts, streams, playlists, community posts, and curated sections, all from one node.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 
@@ -25,17 +25,17 @@ The credential test uses the free video-info endpoint and consumes no credits.
 
 ## Operations
 
-One node, twelve operations:
+One node, eleven operations:
 
 | Operation | What it does | Credits |
 |---|---|---|
 | **Get Transcript** | Transcript of a video (full URL, youtu.be, Shorts, or bare ID) as **Markdown with metadata** or **structured JSON**; optional preferred language | 1 |
 | **Get Video Metadata** | Rich video metadata: view/like counts, publish date, description, channel, optional `details` (duration, category, tags, caption tracks) and/or `related` videos | 1 |
 | **Search YouTube** | Search videos, channels, playlists, or movies; optional sort/upload-date/duration/feature filters; paginated via continuation token (~20 results/page) | 1/page |
-| **Get Latest Videos** (Channel) | The ~15 newest videos of a channel via RSS: **free, no credits** | Free |
+| **Get Latest Videos** (Channel) | The ~15 newest videos of a channel via RSS: **no credits** | Free |
 | **Get Channel Info** | Channel profile: title, handle, verified flag, counts, description, tags, thumbnails, banners, available tabs | 1 |
 | **Search Channel Videos** | Search within one channel (@handle, URL, or UC channel ID) | 1/page |
-| **List Channel Videos** | Paginated channel feed — uploads, Shorts, or streams (pick the Feed field), ~100 per page | 1/page |
+| **List Channel Videos** | Paginated channel feed: uploads ~100/page, Shorts and streams ~48/page (pick the Feed field) | 1/page |
 | **List Channel Playlists** | Paginated list of a channel's playlists | 1/page |
 | **List Channel Posts** | Paginated community (Posts tab) content: text, attachments, like counts | 1/page |
 | **Get Channel Sections** | Curated channel sections (Home shelves, podcasts, or releases) | 1 |
@@ -43,7 +43,7 @@ One node, twelve operations:
 
 ### Pagination
 
-Search, channel, and playlist listings return a `continuation_token` when more results exist. Feed it into the operation's **Continuation Token** field to fetch the next page; the other parameters are then ignored (the token encodes them) — except **List Channel Videos**, where you should repeat the same **Feed** value on every page.
+Search, channel, and playlist listings return a `continuation_token` when more results exist. Feed it into the operation's **Continuation Token** field to fetch the next page; the other parameters are then ignored (the token encodes them), except **List Channel Videos**, where you should repeat the same **Feed** value on every page.
 
 ### Get Transcript output formats
 
