@@ -25,7 +25,7 @@ You need a TranscriptAPI API key (starts with `sk_`):
 2. Create an API key on the dashboard.
 3. In n8n, create a **TranscriptAPI API** credential and paste the key.
 
-The credential test uses the free video-info endpoint and consumes no credits.
+The credential test calls the free /youtube/info endpoint.
 
 ## Operations
 
