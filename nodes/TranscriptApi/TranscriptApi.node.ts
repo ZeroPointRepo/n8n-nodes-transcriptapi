@@ -95,6 +95,13 @@ export class TranscriptApi implements INodeType {
 						description: 'Fetch the transcript of a YouTube video (1 credit)',
 						action: 'Get a video transcript',
 					},
+					{
+						name: 'Get Video Metadata',
+						value: 'getVideoMetadata',
+						description:
+							'Rich video metadata: view/like counts, publish date, description, channel, optional details/related (1 credit)',
+						action: 'Get video metadata',
+					},
 				],
 				default: 'getTranscript',
 			},
@@ -113,7 +120,7 @@ export class TranscriptApi implements INodeType {
 				displayName: 'Output Format',
 				name: 'outputFormat',
 				type: 'options',
-				displayOptions: { show: { resource: ['video'] } },
+				displayOptions: { show: { resource: ['video'], operation: ['getTranscript'] } },
 				options: [
 					{
 						name: 'Markdown With Metadata',
@@ -132,11 +139,31 @@ export class TranscriptApi implements INodeType {
 				displayName: 'Language',
 				name: 'language',
 				type: 'string',
-				displayOptions: { show: { resource: ['video'] } },
+				displayOptions: { show: { resource: ['video'], operation: ['getTranscript'] } },
 				default: '',
 				placeholder: 'en',
 				description:
 					'Preferred transcript language code (e.g. "en", "de"). Leave empty for the default. Tip: the free video-info endpoint lists available languages.',
+			},
+			{
+				displayName: 'Include',
+				name: 'metadataInclude',
+				type: 'multiOptions',
+				displayOptions: { show: { resource: ['video'], operation: ['getVideoMetadata'] } },
+				options: [
+					{
+						name: 'Details',
+						value: 'details',
+						description: 'Duration, category, tags, and the caption-track inventory',
+					},
+					{
+						name: 'Related',
+						value: 'related',
+						description: 'Related/suggested videos',
+					},
+				],
+				default: [],
+				description: 'Optional extras to include. Does not change the credit cost.',
 			},
 
 			// ── Search ───────────────────────────────────────────────────────────
@@ -173,9 +200,66 @@ export class TranscriptApi implements INodeType {
 				options: [
 					{ name: 'Videos', value: 'video' },
 					{ name: 'Channels', value: 'channel' },
+					{ name: 'Playlists', value: 'playlist' },
+					{ name: 'Movies', value: 'movie' },
 				],
 				default: 'video',
 				description: 'What to search for (first page only)',
+			},
+			{
+				displayName: 'Sort',
+				name: 'searchSort',
+				type: 'options',
+				displayOptions: { show: { resource: ['search'], continuation: [''] } },
+				options: [
+					{ name: 'Relevance', value: 'relevance' },
+					{ name: 'Views (Popularity)', value: 'views' },
+				],
+				default: 'relevance',
+				description: 'Sort order (first page only)',
+			},
+			{
+				displayName: 'Upload Date',
+				name: 'searchUploadDate',
+				type: 'options',
+				displayOptions: {
+					show: { resource: ['search'], continuation: [''], searchType: ['video'] },
+				},
+				options: [
+					{ name: 'Any Time', value: '' },
+					{ name: 'Last Hour', value: 'hour' },
+					{ name: 'This Month', value: 'month' },
+					{ name: 'This Week', value: 'week' },
+					{ name: 'This Year', value: 'year' },
+					{ name: 'Today', value: 'today' },
+				],
+				default: '',
+				description: 'Upload-date window (videos only, first page only)',
+			},
+			{
+				displayName: 'Duration',
+				name: 'searchDuration',
+				type: 'options',
+				displayOptions: {
+					show: { resource: ['search'], continuation: [''], searchType: ['video'] },
+				},
+				options: [
+					{ name: 'Any', value: '' },
+					{ name: 'Short (Under 4 Minutes)', value: 'short' },
+					{ name: 'Medium (4-20 Minutes)', value: 'medium' },
+					{ name: 'Long (Over 20 Minutes)', value: 'long' },
+				],
+				default: '',
+				description: 'Duration bucket (videos only, first page only)',
+			},
+			{
+				displayName: 'Features',
+				name: 'searchFeatures',
+				type: 'string',
+				displayOptions: { show: { resource: ['search'], continuation: [''] } },
+				default: '',
+				placeholder: 'hd,subtitles,cc,live,4k,hdr,360,creative_commons',
+				description: 'Comma-separated feature filters (first page only)',
 			},
 			{
 				displayName: 'Continuation Token',
@@ -184,7 +268,7 @@ export class TranscriptApi implements INodeType {
 				displayOptions: { show: { resource: ['search'] } },
 				default: '',
 				description:
-					'Continuation token from a previous response to fetch the next page. When set, Query and Result Type are ignored.',
+					'Continuation token from a previous response to fetch the next page. When set, the other search parameters are ignored.',
 			},
 
 			// ── Channel ──────────────────────────────────────────────────────────
@@ -196,22 +280,49 @@ export class TranscriptApi implements INodeType {
 				displayOptions: { show: { resource: ['channel'] } },
 				options: [
 					{
+						name: 'Get Channel Info',
+						value: 'channelInfo',
+						description:
+							'Channel profile: title, handle, counts, tags, banners, available tabs (1 credit)',
+						action: 'Get channel info',
+					},
+					{
+						name: 'Get Channel Sections',
+						value: 'channelSections',
+						description:
+							'Curated channel sections: featured (Home), podcasts, or releases (1 credit)',
+						action: 'Get channel sections',
+					},
+					{
 						name: 'Get Latest Videos',
 						value: 'channelLatest',
 						description: 'The ~15 newest videos of a channel via RSS: FREE, no credits',
 						action: 'Get the latest channel videos',
 					},
 					{
-						name: 'Search Channel Videos',
-						value: 'channelSearch',
-						description: 'Search within one channel (1 credit/page)',
-						action: 'Search within a channel',
+						name: 'List Channel Playlists',
+						value: 'channelPlaylists',
+						description: 'Paginated list of a channel’s playlists (1 credit/page)',
+						action: 'List channel playlists',
+					},
+					{
+						name: 'List Channel Posts',
+						value: 'channelPosts',
+						description: 'Paginated community (Posts tab) content (1 credit/page)',
+						action: 'List channel posts',
 					},
 					{
 						name: 'List Channel Videos',
 						value: 'channelVideos',
-						description: 'Paginated channel uploads, ~100 per page (1 credit/page)',
+						description:
+							'Paginated channel feed: uploads, Shorts, or streams, ~100 per page (1 credit/page)',
 						action: 'List channel videos',
+					},
+					{
+						name: 'Search Channel Videos',
+						value: 'channelSearch',
+						description: 'Search within one channel (1 credit/page)',
+						action: 'Search within a channel',
 					},
 				],
 				default: 'channelLatest',
@@ -236,15 +347,45 @@ export class TranscriptApi implements INodeType {
 				description: 'Search query within the channel (1-200 characters, first page)',
 			},
 			{
+				displayName: 'Feed',
+				name: 'channelVideosTab',
+				type: 'options',
+				displayOptions: { show: { resource: ['channel'], operation: ['channelVideos'] } },
+				options: [
+					{ name: 'Videos (Uploads)', value: 'videos' },
+					{ name: 'Shorts', value: 'shorts' },
+					{ name: 'Streams (Live)', value: 'streams' },
+				],
+				default: 'videos',
+				description: 'Which feed to list. Use the same value on every page when paginating.',
+			},
+			{
+				displayName: 'Sections Tab',
+				name: 'channelSectionsTab',
+				type: 'options',
+				displayOptions: { show: { resource: ['channel'], operation: ['channelSections'] } },
+				options: [
+					{ name: 'Featured (Home)', value: 'featured' },
+					{ name: 'Podcasts', value: 'podcasts' },
+					{ name: 'Releases', value: 'releases' },
+				],
+				default: 'featured',
+				description:
+					'Which curated page to read. Podcasts/releases only exist on channels that have them.',
+			},
+			{
 				displayName: 'Continuation Token',
 				name: 'channelContinuation',
 				type: 'string',
 				displayOptions: {
-					show: { resource: ['channel'], operation: ['channelSearch', 'channelVideos'] },
+					show: {
+						resource: ['channel'],
+						operation: ['channelSearch', 'channelVideos', 'channelPlaylists', 'channelPosts'],
+					},
 				},
 				default: '',
 				description:
-					'Continuation token from a previous response to fetch the next page. When set, the other parameters are ignored.',
+					'Continuation token from a previous response to fetch the next page. When set, the other parameters (except Feed, where applicable) are ignored.',
 			},
 
 			// ── Playlist ─────────────────────────────────────────────────────────
@@ -305,6 +446,11 @@ export class TranscriptApi implements INodeType {
 					qs.format = outputFormat === 'markdown' ? 'text' : 'json';
 					const language = this.getNodeParameter('language', i, '') as string;
 					if (language) qs.language = language;
+				} else if (resource === 'video' && operation === 'getVideoMetadata') {
+					url = '/youtube/video/metadata';
+					qs.video_url = this.getNodeParameter('videoUrl', i) as string;
+					const include = this.getNodeParameter('metadataInclude', i, []) as string[];
+					if (include.length > 0) qs.include = include.join(',');
 				} else if (resource === 'search' && operation === 'searchYoutube') {
 					url = '/youtube/search';
 					const continuation = this.getNodeParameter('continuation', i, '') as string;
@@ -313,11 +459,25 @@ export class TranscriptApi implements INodeType {
 					} else {
 						qs.q = this.getNodeParameter('query', i) as string;
 						qs.type = this.getNodeParameter('searchType', i) as string;
+						qs.sort = this.getNodeParameter('searchSort', i, 'relevance') as string;
+						const uploadDate = this.getNodeParameter('searchUploadDate', i, '') as string;
+						if (uploadDate) qs.upload_date = uploadDate;
+						const duration = this.getNodeParameter('searchDuration', i, '') as string;
+						if (duration) qs.duration = duration;
+						const features = this.getNodeParameter('searchFeatures', i, '') as string;
+						if (features) qs.features = features;
 					}
 				} else if (resource === 'channel') {
 					if (operation === 'channelLatest') {
 						url = '/youtube/channel/latest';
 						qs.channel = this.getNodeParameter('channel', i) as string;
+					} else if (operation === 'channelInfo') {
+						url = '/youtube/channel/info';
+						qs.channel = this.getNodeParameter('channel', i) as string;
+					} else if (operation === 'channelSections') {
+						url = '/youtube/channel/sections';
+						qs.channel = this.getNodeParameter('channel', i) as string;
+						qs.tab = this.getNodeParameter('channelSectionsTab', i, 'featured') as string;
 					} else if (operation === 'channelSearch') {
 						url = '/youtube/channel/search';
 						const continuation = this.getNodeParameter('channelContinuation', i, '') as string;
@@ -329,6 +489,23 @@ export class TranscriptApi implements INodeType {
 						}
 					} else if (operation === 'channelVideos') {
 						url = '/youtube/channel/videos';
+						qs.tab = this.getNodeParameter('channelVideosTab', i, 'videos') as string;
+						const continuation = this.getNodeParameter('channelContinuation', i, '') as string;
+						if (continuation) {
+							qs.continuation = continuation;
+						} else {
+							qs.channel = this.getNodeParameter('channel', i) as string;
+						}
+					} else if (operation === 'channelPlaylists') {
+						url = '/youtube/channel/playlists';
+						const continuation = this.getNodeParameter('channelContinuation', i, '') as string;
+						if (continuation) {
+							qs.continuation = continuation;
+						} else {
+							qs.channel = this.getNodeParameter('channel', i) as string;
+						}
+					} else if (operation === 'channelPosts') {
+						url = '/youtube/channel/posts';
 						const continuation = this.getNodeParameter('channelContinuation', i, '') as string;
 						if (continuation) {
 							qs.continuation = continuation;
@@ -368,7 +545,7 @@ export class TranscriptApi implements INodeType {
 					options,
 				)) as IDataObject;
 
-				if (resource === 'video') {
+				if (resource === 'video' && operation === 'getTranscript') {
 					const outputFormat = this.getNodeParameter('outputFormat', i) as string;
 					if (outputFormat === 'markdown') {
 						returnData.push({
