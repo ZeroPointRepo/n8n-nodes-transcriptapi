@@ -390,7 +390,7 @@ export class TranscriptApi implements INodeType {
 				],
 				default: '',
 				description:
-					'Existing calls are untouched: omitting sort returns the uploads feed exactly as before. sort=latest is a different view (YouTube\'s Videos tab, Shorts excluded), not a re-ordering of it. On the Videos feed, unset reads the uploads playlist (~100/page, Shorts mixed in, members-only videos excluded) while any Sort value reads the channel Videos tab (~30/page, long-form only, members-only videos included and flagged with members_only). Shorts and Streams read the same feed either way, so Sort only reorders them. Repeat the same value on every page when paginating.',
+					'Sort a channel\'s videos by latest, popular, or oldest, for example most-popular first. Sorted pages return about 30 videos (unsorted about 100); each page costs 1 credit.',
 			},
 			{
 				displayName: 'Sections Tab',
