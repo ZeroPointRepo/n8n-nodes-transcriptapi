@@ -70,21 +70,9 @@ Search, channel, and playlist listings return a `continuation_token` when more r
 
 ### Sorting channel videos
 
-**List Channel Videos** has an optional **Sort** field: **Latest**, **Popular** (most viewed first), or **Oldest**. It defaults to unset.
+**Sorting.** Add sort=latest, popular, or oldest to channel/videos to get a channel's videos in the order you want, for example its most-popular uploads first. A sorted page returns about 30 videos (an unsorted page returns about 100), and every page costs the same 1 credit.
 
-Existing calls are untouched: omitting sort returns the uploads feed exactly as before. sort=latest is a different view (YouTube's Videos tab, Shorts excluded), not a re-ordering of it.
-
-| | Feed: Videos, Sort unset | Feed: Videos, any Sort |
-|---|---|---|
-| Source | The channel's uploads playlist | The channel's Videos tab |
-| Page size | ~100 | ~30 |
-| `playlist_info` | Populated | `null` |
-| Shorts | Mixed in with long-form uploads | Excluded (use Feed: Shorts) |
-| Members-only videos | Excluded | Included, flagged `members_only: true` |
-
-Sort reads ~3.3x more pages (~30/page vs ~100), so it costs ~3.3x credits. Use it when you need ordering; most integrations don't.
-
-**Shorts** and **Streams** read the same feed either way, so Sort only reorders them.
+When paging, send the same Sort value on each request.
 
 Every item in the response carries `members_only`. It is `false` unless YouTube badges the video "Members only", and members-only items have no `viewCountText`, because YouTube does not publish view counts for membership content. On the uploads feed and on playlists it is always `false`.
 
