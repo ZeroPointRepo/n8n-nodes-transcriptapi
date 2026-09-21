@@ -39,7 +39,7 @@ One node, eleven operations:
 | **Get Latest Videos** (Channel) | The ~15 newest videos of a channel via RSS | Free |
 | **Get Channel Info** | Channel profile: title, handle, verified flag, counts, description, tags, thumbnails, banners, available tabs | 1 |
 | **Search Channel Videos** | Search within one channel (@handle, URL, or UC channel ID) | 1/page |
-| **List Channel Videos** | Paginated channel feed: uploads ~100/page, Shorts and streams ~48/page (pick the Feed field) | 1/page |
+| **List Channel Videos** | Paginated channel feed: uploads ~100/page, Shorts and streams ~48/page (pick the Feed field); optional **Sort** (latest / popular / oldest) | 1/page |
 | **List Channel Playlists** | Paginated list of a channel's playlists | 1/page |
 | **List Channel Posts** | Paginated community (Posts tab) content: text, attachments, like counts | 1/page |
 | **Get Channel Sections** | Curated channel sections (Home shelves, podcasts, or releases) | 1 |
@@ -58,6 +58,7 @@ One node, eleven operations:
 | Check a channel's size and which tabs it exposes before deciding what to fetch | **Get Channel Info** |
 | Find a specific topic inside one channel's back catalog | **Search Channel Videos** |
 | Pull a channel's entire catalog: uploads, Shorts, or live streams | **List Channel Videos** (set Feed) |
+| Rank a channel's back catalog by views, or walk it oldest-first | **List Channel Videos** (set Sort) |
 | Build a transcription queue from a channel's playlists | **List Channel Playlists** then **List Playlist Videos** |
 | Read a channel's community announcements | **List Channel Posts** |
 | See how a channel curates its own homepage (featured shelves, podcasts, releases) | **Get Channel Sections** |
@@ -65,7 +66,29 @@ One node, eleven operations:
 
 ### Pagination
 
-Search, channel, and playlist listings return a `continuation_token` when more results exist. Feed it into the operation's **Continuation Token** field to fetch the next page; the other parameters are then ignored (the token encodes them), except **List Channel Videos**, where you should repeat the same **Feed** value on every page.
+Search, channel, and playlist listings return a `continuation_token` when more results exist. Feed it into the operation's **Continuation Token** field to fetch the next page; the other parameters are then ignored (the token encodes them), except **List Channel Videos**, where you should repeat the same **Feed** and **Sort** values on every page.
+
+### Sorting channel videos
+
+**List Channel Videos** has an optional **Sort** field: **Latest**, **Popular** (most viewed first), or **Oldest**. It defaults to unset.
+
+Existing calls are untouched: omitting sort returns the uploads feed exactly as before. sort=latest is a different view (YouTube's Videos tab, Shorts excluded), not a re-ordering of it.
+
+| | Feed: Videos, Sort unset | Feed: Videos, any Sort |
+|---|---|---|
+| Source | The channel's uploads playlist | The channel's Videos tab |
+| Page size | ~100 | ~30 |
+| `playlist_info` | Populated | `null` |
+| Shorts | Mixed in with long-form uploads | Excluded (use Feed: Shorts) |
+| Members-only videos | Excluded | Included, flagged `members_only: true` |
+
+Sort reads ~3.3x more pages (~30/page vs ~100), so it costs ~3.3x credits. Use it when you need ordering; most integrations don't.
+
+**Shorts** and **Streams** read the same feed either way, so Sort only reorders them.
+
+Every item in the response carries `members_only`. It is `false` unless YouTube badges the video "Members only", and members-only items have no `viewCountText`, because YouTube does not publish view counts for membership content. On the uploads feed and on playlists it is always `false`.
+
+Items from **Feed: Streams** also carry `publishedTimeText` (for example `Streamed 2 years ago`) and `lengthText`. **Feed: Shorts** returns `null` for both: YouTube's Shorts grid publishes neither a duration nor a publish date.
 
 ### Get Transcript output formats
 
@@ -80,6 +103,7 @@ Search, channel, and playlist listings return a `continuation_token` when more r
 | **Research sweep on a topic** | **Search YouTube** -> Split In Batches -> **Get Transcript** (JSON) per result, paginate with the continuation token |
 | **Screen before transcribing** | **Search YouTube** -> **Get Video Metadata** (check view count / publish date) -> IF node -> **Get Transcript** only for the ones worth it |
 | **Archive a channel's full catalog** | **Get Channel Info** (confirm tabs) -> **List Channel Videos** (Feed: videos) -> loop pages with the continuation token -> **Get Transcript** per video |
+| **Find a channel's greatest hits** | **List Channel Videos** (Feed: videos, Sort: Popular) -> Limit to the top N -> **Get Transcript** per video -> your LLM node |
 | **Build a playlist-based course index** | **List Channel Playlists** -> **List Playlist Videos** per playlist -> **Get Transcript** per video |
 | **Track a channel's community posts** | Schedule Trigger -> **List Channel Posts** -> filter for new `postId`s -> notify (Slack/email node) |
 | **Competitor / topic watch inside one channel** | **Search Channel Videos** with your keyword -> **Get Transcript** on matches |

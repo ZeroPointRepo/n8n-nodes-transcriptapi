@@ -315,7 +315,7 @@ export class TranscriptApi implements INodeType {
 						name: 'List Channel Videos',
 						value: 'channelVideos',
 						description:
-							'Paginated channel feed: uploads, Shorts, or streams, ~100 per page (1 credit/page)',
+							'Paginated channel feed: uploads, Shorts, or streams, with optional latest/popular/oldest sort (1 credit/page)',
 						action: 'List channel videos',
 					},
 					{
@@ -360,6 +360,39 @@ export class TranscriptApi implements INodeType {
 				description: 'Which feed to list. Use the same value on every page when paginating.',
 			},
 			{
+				displayName: 'Sort',
+				name: 'channelVideosSort',
+				type: 'options',
+				displayOptions: { show: { resource: ['channel'], operation: ['channelVideos'] } },
+				options: [
+					{
+						name: 'Default (Uploads Feed, Newest First)',
+						value: '',
+						description:
+							'Leave unset. Videos feed reads the uploads playlist: ~100 per page, Shorts mixed in, members-only videos excluded.',
+					},
+					{
+						name: 'Latest',
+						value: 'latest',
+						description:
+							'Newest first, read from the channel Videos tab (~30 per page, Shorts excluded, members-only included)',
+					},
+					{
+						name: 'Oldest',
+						value: 'oldest',
+						description: 'Oldest first, read from the channel Videos tab',
+					},
+					{
+						name: 'Popular',
+						value: 'popular',
+						description: 'Most-viewed first, read from the channel Videos tab',
+					},
+				],
+				default: '',
+				description:
+					'Existing calls are untouched: omitting sort returns the uploads feed exactly as before. sort=latest is a different view (YouTube\'s Videos tab, Shorts excluded), not a re-ordering of it. On the Videos feed, unset reads the uploads playlist (~100/page, Shorts mixed in, members-only videos excluded) while any Sort value reads the channel Videos tab (~30/page, long-form only, members-only videos included and flagged with members_only). Shorts and Streams read the same feed either way, so Sort only reorders them. Repeat the same value on every page when paginating.',
+			},
+			{
 				displayName: 'Sections Tab',
 				name: 'channelSectionsTab',
 				type: 'options',
@@ -385,7 +418,7 @@ export class TranscriptApi implements INodeType {
 				},
 				default: '',
 				description:
-					'Continuation token from a previous response to fetch the next page. When set, the other parameters (except Feed, where applicable) are ignored.',
+					'Continuation token from a previous response to fetch the next page. When set, the other parameters are ignored, except Feed and Sort on List Channel Videos, which must repeat the same values on every page.',
 			},
 
 			// ── Playlist ─────────────────────────────────────────────────────────
@@ -490,6 +523,10 @@ export class TranscriptApi implements INodeType {
 					} else if (operation === 'channelVideos') {
 						url = '/youtube/channel/videos';
 						qs.tab = this.getNodeParameter('channelVideosTab', i, 'videos') as string;
+						// Opt-in: only send `sort` when the user picked one. Omitting it keeps the
+						// uploads-playlist feed, which is a different set from the Videos tab.
+						const sort = this.getNodeParameter('channelVideosSort', i, '') as string;
+						if (sort) qs.sort = sort;
 						const continuation = this.getNodeParameter('channelContinuation', i, '') as string;
 						if (continuation) {
 							qs.continuation = continuation;

@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-transcriptapi",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "n8n community node for TranscriptAPI: transcripts, video metadata, search, and channel and playlist tools.",
   "keywords": [
     "n8n-community-node-package",
